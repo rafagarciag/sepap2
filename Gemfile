@@ -13,20 +13,17 @@ gem 'cancan'
 gem 'json_builder'
 
 #ace code editor and syntax highlighter
-gem 'ace-rails'
+gem 'ace-rails-ap', "~> 2.0.0"
 gem 'coderay'
 gem 'RedCloth'
 
 # Required for file uploads (Carrierwave)
 gem "rmagick"
 gem "carrierwave"
-
+gem "vagrant"
 
 gem "exception_notification"
 gem "hirb"
-# Active Admin + Required Gems
-gem 'activeadmin'
-gem "meta_search", '>= 1.1.0.pre'
 
 # Devise
 gem "devise", "~> 2.0.0"
@@ -38,6 +35,11 @@ gem 'sqlite3'
 
 group :development do
   gem "rails-erd"
+  gem 'railroady'
+  # Better error handling
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'meta_request'
 end
 
 group :production do
@@ -55,11 +57,18 @@ group :assets do
   # gem 'therubyracer', :platform => :ruby
 
   gem 'uglifier', '>= 1.0.3'
+
+  # Add these gems
+  gem 'compass-rails'
+  gem 'zurb-foundation'
+  gem 'jquery-datatables-rails'
 end
 
 gem 'jquery-rails'
 
 gem 'acts-as-taggable-on'
+
+gem "nested_form", git: "git@github.com:ryanb/nested_form.git"
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

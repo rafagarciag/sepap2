@@ -1,9 +1,26 @@
-<% if user_signed_in? %>
-  <li><%= link_to "#{t :menu_attempts}", attempts_path %></li>
-  <li><%= link_to "#{t :menu_assignments}", assignments_path %></li>
-  <li><%= link_to("#{t :menu_edit}", edit_user_registration_path) %></li>
-  <li><%= link_to("#{t :menu_logout}", destroy_user_session_path, :method => :delete) %></li>
-<% else %>
-  <li><%= link_to("#{t :menu_login}", new_user_session_path)  %></li>
-  <li><%= link_to("#{t :menu_register}", new_user_registration_path)  %></li>
-<% end %>
+<ul class="left">
+  <li><%= link_to "#{t :menu_problems}", problems_path(locale: params[:locale]) %></li>
+  <li><%= link_to "#{t :menu_attempts}", attempts_path(locale: params[:locale]) %></li>
+  <li><%= link_to "#{t :menu_assignments}", assignments_path(locale: params[:locale]) %></li>
+</ul>
+
+<ul class="right">
+  <li><%= link_to "#{t :feedback}", "https://docs.google.com/spreadsheet/viewform?formkey=dFBtcFFTc2IyUE5VU3l2T1pfZGh4N2c6MQ#gid=0" %></li>
+  <li class="locales">
+    <% if I18n.locale == :en %>
+      <%=link_to( "Spanish", url_for(:locale=>'es'), :class => "locale_setter") %>
+    <% else %>
+      <%=link_to( "Inglés", url_for(:locale=>'en'), :class => "locale_setter") %>
+    <% end %>
+  </li>
+  <li class="has-dropdown">
+    <%= link_to "#{current_user.name}", "#" %>
+    <ul class="dropdown">
+      <% if current_user.try(:teacher?) %>
+        <li><%= link_to "Admin", admin_problems_path(locale: params[:locale]) %></li>
+      <% end %>
+      <li><%= link_to("#{t :menu_edit}", edit_user_registration_path(locale: params[:locale])) %></li>
+      <li><%= link_to("#{t :menu_logout}", destroy_user_session_path, :method => :delete) %></li>
+    </ul>
+  </li>
+</ul>

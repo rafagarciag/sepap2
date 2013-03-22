@@ -1,40 +1,121 @@
-<%= semantic_form_for [:admin, @problem] do |f| %>
-    <%= f.inputs :name => "Details" do %>
-      <%= f.input :title %>
-      <%= f.input :topics, as: :check_boxes %>
-      <%= f.input :description %>
-      <%= f.input :time %>
-      
-      <%= image_tag "infoicon.png" ,size: "20x20", id: "infoMain", class: "info"%>
-        <div style="position:relative">
-          <span id="spInfoMain", class="tooltip">
-            Here you must upload the file containing the source code file that contains the main method of the problem. </br>
-          </br>
-            The following file extensions are accepted: </br>
-            <code>.c, .cpp, .cs, .java</code>
-          </span>
-        </div>
-      <%= f.input :main %>
-      
-      <%= image_tag "infoicon.png" ,size: "20x20", id: "infoMethod", class: "info"%>
-        <div style="position:relative">
-          <span id="spInfoMethod", class="tooltip">
-            In case your problem consists in coding a method or function, you must upload the file containing the source code to the method. </br>
-            </br>
-            The following file extensions are accepted: </br>
-            <code>.c, .cpp, .cs, .java</code>
-          </span>
-        </div>
-      <%= f.input :method %>
-      
-      <%= image_tag "infoicon.png" ,size: "20x20", id: "infoInput", class: "info"%>
-        <div style ="position:relative">
-          <span id="spInfoInput", class="tooltip">
-            You must write the input to your problem as it would receive it from the console.
-          </span>
-        </div>
-      <%= f.input :input, as: :text %>
+<%= nested_form_for([:admin, @admin_problem], :html=>{:class=>"custom"}) do |f| %>
+  <% if @admin_problem.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@admin_problem.errors.count, "error") %> prohibited this admin_problem from being saved:</h2>
 
+      <ul>
+        <% @admin_problem.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="row">
+    <%= f.fields_for :titles do |tf|%>
+      <div class="six mobile-two columns">
+        <%= tf.label :text_content, "Tittle in #{humanized_language(tf.object.locale)}" %>
+        <%= tf.text_field :text_content %>
+        <%= tf.hidden_field :locale, :value => tf.object.locale%>
+      </div>
     <% end %>
-    <%= f.buttons %>
+  </div>
+
+  <div class="row">
+    <%= f.fields_for :descriptions do |df|%>
+      <div class="six mobile-two columns">
+        <%= df.label :text_content, "Description in #{humanized_language(df.object.locale)}" %>
+        <%= df.text_area :text_content %>
+        <%= df.hidden_field :locale, :value => df.object.locale%>
+      </div>
+    <% end %>
+  </div>
+  <div class="row">
+    <div class="one mobile-one columns">
+      <%= f.label :topic_ids, "Topics" %>
+    </div>
+    <div class="eleven mobile-three columns">
+      <% Topic.all.each do |topic| %>
+        <%= label_tag 'problem[topic_ids][]', "#{check_box_tag 'problem[topic_ids][]', topic.id, @admin_problem.topics.include?(topic)} #{topic.name}".html_safe, :style=>"display:inline;" %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="two mobile-four columns">
+      <%= f.label :time%>
+      <%= f.number_field :time, :min=>0 %>
+    </div>
+    <div class="two mobile-two columns">
+      <%= f.label :dificulty %>
+      <%= f.select :dificulty, Problem::DIFICULTY_LEVELS %>
+    </div>
+    <div class="two mobile-two columns end">
+      <%= f.label :command_id, "Language" %>
+      <%= f.select :command_id, Command.all.map{|c| [c.name, c.id]} %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      <ul class="accordion">
+        <li class="active">
+          <div class="title">
+            <%= f.label :main %>
+          </div>
+          <div class="content">
+            <div id="mainEditor"></div>
+            <%= f.text_area :main, :style=>"border:none;box-shadow:none;"%>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="twelve columns">
+      <ul class="accordion">
+        <li class="<%= 'active' unless @admin_problem.method.blank? %>">
+          <div class="title">
+            <%= f.label :method %>
+          </div>
+          <div class="content">
+            <div id="methodEditor"></div>
+            <%= f.text_area :method, :style=>"border:none;box-shadow:none;" %>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <%= f.label :cases, :style => "display:inline" %> <%= f.link_to_add "Add a case", :cases, :class => "button small", :data => { :target => "#list_cases" } %>
+    <ul class="accordion" id="list_cases">
+      <%= f.fields_for :cases, :wrapper => false do |cf| %>
+        <li class="fields">
+          <div class="title">
+            <h5>
+              Case <span class="case_number">1</span>
+            </h5>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="six columns">
+                <%= cf.label :input %>
+                <%= cf.text_area :input, :rows => 13 %>
+                <%= cf.link_to_remove "Remove this case", :class=> "button tiny alert" %>
+                <%= cf.hidden_field :from_form, :value => true %>
+              </div>
+              <div class="six columns">
+                <%= cf.fields_for :feedbacks do |fb| %>
+                  <%= fb.label :text_content, "Feedback in #{humanized_language(fb.object.locale)}"%>
+                  <%= fb.text_area :text_content, :rows => 5 %>
+                  <%= fb.hidden_field :locale, :value => fb.object.locale%>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+  </div>
+  <div class="row">
+    <%= f.submit :class=> "button" %>
+  </div>
 <% end %>
